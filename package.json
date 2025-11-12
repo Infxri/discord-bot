@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "discord.js": "^14.15.0",
+    "@discordjs/voice": "^0.15.0",
     "ytdl-core": "^4.11.5",
     "yt-search": "^2.10.5",
     "ffmpeg-static": "^5.2.0",
     "express": "^4.19.2",
-    "dotenv": "^16.4.5",
-    "fs": "^0.0.1-security"
+    "dotenv": "^16.4.5"
   }
 }
