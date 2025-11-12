@@ -1,3 +1,9 @@
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+
+
+
 const { Client, GatewayIntentBits } = require("discord.js");
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
