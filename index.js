@@ -1,19 +1,24 @@
-client.login(DISCORD_TOKEN);
-
-
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-
-
+// ---------------------- LOAD ENVIRONMENT ----------------------
+require("dotenv").config(); // only needed for local testing
 
 const { Client, GatewayIntentBits } = require("discord.js");
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require("@discordjs/voice");
+const {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  AudioPlayerStatus
+} = require("@discordjs/voice");
 const fs = require("fs");
-require("dotenv").config();
 
+// ---------------------- SECRETS ----------------------
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID; // optional
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET; // optional
+// SPOTIFY_REFRESH_TOKEN can be added later if you implement OAuth
+
+// ---------------------- CLIENT ----------------------
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -23,6 +28,7 @@ const client = new Client({
   ]
 });
 
+// ---------------------- VARIABLES ----------------------
 const prefix = "!";
 let users = {};
 let balances = {};
@@ -30,7 +36,6 @@ let queue = [];
 let connection, player;
 
 // ---------------------- MUSIC COMMANDS ----------------------
-
 async function playMusic(message, query) {
   const vc = message.member?.voice?.channel;
   if (!vc) return message.reply("🎧 Join a voice channel first!");
@@ -68,7 +73,6 @@ function playNext(message) {
 }
 
 // ---------------------- RPG SYSTEM ----------------------
-
 function initUser(id) {
   if (!users[id]) users[id] = { level: 1, exp: 0, hp: 100, atk: 10 };
   if (!balances[id]) balances[id] = 100;
@@ -101,7 +105,6 @@ function levelUp(user) {
 }
 
 // ---------------------- GAMBLING SYSTEM ----------------------
-
 function gamble(message, amount) {
   initUser(message.author.id);
   const bet = parseInt(amount);
@@ -113,7 +116,6 @@ function gamble(message, amount) {
 }
 
 // ---------------------- HELP COMMAND ----------------------
-
 function helpList(message) {
   const helpText = `
 🤖 **BOT COMMANDS**
@@ -137,7 +139,6 @@ function helpList(message) {
 }
 
 // ---------------------- MESSAGE HANDLER ----------------------
-
 client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -166,11 +167,16 @@ client.on("messageCreate", async (message) => {
       break;
     case "stats":
       const u = users[message.author.id];
-      message.channel.send(`📊 **${message.author.username}** — Lvl ${u.level}, HP ${u.hp}, ATK ${u.atk}, EXP ${u.exp}`);
+      message.channel.send(
+        `📊 **${message.author.username}** — Lvl ${u.level}, HP ${u.hp}, ATK ${u.atk}, EXP ${u.exp}`
+      );
       break;
     case "lb":
       const sorted = Object.entries(users).sort((a, b) => b[1].level - a[1].level);
-      message.channel.send("🏆 **Leaderboard**:\n" + sorted.map(([id, u], i) => `${i + 1}. <@${id}> — Lvl ${u.level}`).join("\n"));
+      message.channel.send(
+        "🏆 **Leaderboard**:\n" +
+          sorted.map(([id, u], i) => `${i + 1}. <@${id}> — Lvl ${u.level}`).join("\n")
+      );
       break;
     case "bet":
       gamble(message, args[0]);
@@ -181,5 +187,8 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+// ---------------------- READY EVENT ----------------------
 client.once("ready", () => console.log(`✅ Logged in as ${client.user.tag}`));
-client.login(process.env.DISCORD_TOKEN);
+
+// ---------------------- LOGIN ----------------------
+client.login(DISCORD_TOKEN);
